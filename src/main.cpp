@@ -5,10 +5,12 @@ pros::Controller master(pros::E_CONTROLLER_MASTER);
 
 auto chassis =
 	reauto::ChassisBuilder<>()
-		.motors({20, -19, -18}, {16, 15, -13}, pros::Motor_Gears::blue)
+		.motors({14, -19, -18}, {16, 15, -13}, pros::Motor_Gears::blue)
 		.controller(master)
 		.build();
 
+// the catapult is free spinning, so no need to add any functionality to reauto.
+pros::Motor cata(12);
 pros::Motor intake(11);
 
 void initialize() {}
@@ -36,6 +38,14 @@ void opcontrol() {
 
 		else {
 			intake.brake();
+		}
+
+		if (master.get_digital(DIGITAL_L1)) {
+			cata.move_voltage(12000);
+		}
+
+		else {
+			cata.move_voltage(0);
 		}
 
 		pros::delay(10);
