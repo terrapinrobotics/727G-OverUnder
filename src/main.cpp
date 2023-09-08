@@ -13,6 +13,9 @@ auto chassis =
 pros::Motor cata(12);
 pros::Motor intake(11);
 
+// walls
+pros::adi::Pneumatics walls('A', false);
+
 void initialize() {}
 
 void disabled() {}
@@ -46,6 +49,10 @@ void opcontrol() {
 
 		else {
 			cata.move_voltage(0);
+		}
+
+		if (master.get_digital_new_press(DIGITAL_L2)) {
+			walls.toggle();
 		}
 
 		pros::delay(10);
