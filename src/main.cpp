@@ -29,8 +29,10 @@ void opcontrol() {
  	chassis->setControllerDeadband(12);
 
 	while (true) {
+		// step our tank drive loop, handled by reauto
 		chassis->tank();
 
+		// intake controls
 		if (master.get_digital(DIGITAL_R1)) {
 			intake.move_voltage(-12000);
 		}
@@ -43,6 +45,7 @@ void opcontrol() {
 			intake.brake();
 		}
 
+		// catapult controls
 		if (master.get_digital(DIGITAL_L1)) {
 			cata.move_voltage(12000);
 		}
@@ -50,7 +53,8 @@ void opcontrol() {
 		else {
 			cata.move_voltage(0);
 		}
-
+		
+		// pneumatic walls
 		if (master.get_digital_new_press(DIGITAL_L2)) {
 			walls.toggle();
 		}
