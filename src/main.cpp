@@ -15,6 +15,7 @@ pros::Motor intake(11);
 
 // walls
 pros::adi::Pneumatics walls('A', false);
+pros::adi::Pneumatics doinker('B', false);
 
 void initialize() {}
 
@@ -57,6 +58,10 @@ void opcontrol() {
 		// pneumatic walls
 		if (master.get_digital_new_press(DIGITAL_L2)) {
 			walls.toggle();
+		}
+
+		if (master.get_digital_new_press(DIGITAL_A)) {
+			doinker.toggle();
 		}
 
 		pros::delay(10);
