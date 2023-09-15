@@ -16,6 +16,7 @@ pros::Motor intake(11);
 // walls
 pros::adi::Pneumatics walls('A', false);
 pros::adi::Pneumatics doinker('B', false);
+pros::adi::Pneumatics climb('E', false);
 
 void initialize() {}
 
@@ -62,6 +63,11 @@ void opcontrol() {
 
 		if (master.get_digital_new_press(DIGITAL_A)) {
 			doinker.toggle();
+		}
+
+		// climb
+		if (master.get_digital_new_press(DIGITAL_X)) {
+			climb.toggle();
 		}
 
 		pros::delay(10);
