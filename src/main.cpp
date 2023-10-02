@@ -49,7 +49,7 @@ void opcontrol() {
 
 		// catapult controls
 		if (master.get_digital(DIGITAL_L1)) {
-			cata.move_voltage(10000);
+			cata.move_voltage(10800);
 		}
 
 		else {
