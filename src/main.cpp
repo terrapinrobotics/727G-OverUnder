@@ -11,10 +11,6 @@ auto chassis =
 		.imu(21)
 		.build();
 
-reauto::TrapezoidalProfileConstants c = { 95, 1.34, 28, 0.5 };
-
-auto profile = reauto::TrapezoidalProfile(chassis, c, nullptr);
-
 // the catapult is free spinning, so no need to add any functionality to reauto.
 pros::Motor cata(12);
 pros::Motor intake(11);
@@ -24,17 +20,45 @@ pros::adi::Pneumatics walls('A', false);
 pros::adi::Pneumatics doinker('B', false);
 pros::adi::Pneumatics climb('E', false);
 
+// set up PID controller for lateral movement
+std::vector<IPIDConstants> latConstants = {
+	{0, 0, 0, 0}
+};
 
+// angular movement
+std::vector<IPIDConstants> angConstants = {
+	{0, 0, 0, 0}
+};
 
-void initialize() {}
+PIDExits linExits = {
+	0.1,
+	0.4,
+	50,
+	140,
+	250
+};
+
+PIDExits angExits = {
+	0.5,
+	1,
+	60,
+	150,
+	250
+};
+
+auto linPID = std::make_shared<reauto::controller::PIDController>(latConstants, linExits);
+auto angPID = std::make_shared<reauto::controller::PIDController>(angConstants, angExits);
+auto controller = std::make_shared<reauto::MotionController>(chassis, linPID.get(), angPID.get());
+
+void initialize() {
+	chassis->init();
+}
 
 void disabled() {}
 
 void competition_initialize() {}
 
 void autonomous() {
-	profile.compute(48_in);
-	profile.followLinear();
 }
 
 void opcontrol() {
