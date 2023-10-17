@@ -5,7 +5,7 @@ pros::Controller master(pros::E_CONTROLLER_MASTER);
 
 auto chassis =
 	reauto::ChassisBuilder<>()
-		.motors({14, -19, -18}, {16, 15, -13}, pros::Motor_Gears::blue)
+		.motors({14, -19, -18}, {16, 15, -13}, pros::MotorGears::blue)
 		.controller(master)
 		.setTrackWidth(10.5_in)
 		.imu(21)
