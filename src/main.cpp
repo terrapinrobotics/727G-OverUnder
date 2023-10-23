@@ -1,5 +1,7 @@
 #include "main.h"
 #include "reauto/api.hpp"
+#include "reauto/motion/purepursuit/PurePursuit.hpp"
+#include <memory>
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 
@@ -7,7 +9,7 @@ auto chassis =
 	reauto::ChassisBuilder<>()
 		.motors({14, -19, -18}, {16, 15, -13}, pros::MotorGears::blue)
 		.controller(master)
-		.setTrackWidth(10.5_in)
+		.setChassisConstants(10.5_in, 3.25_in, 360)
 		.imu(21)
 		.build();
 
@@ -50,6 +52,8 @@ auto linPID = std::make_shared<reauto::controller::PIDController>(latConstants, 
 auto angPID = std::make_shared<reauto::controller::PIDController>(angConstants, angExits);
 auto controller = std::make_shared<reauto::MotionController>(chassis, linPID.get(), angPID.get());
 
+auto purePursuit = std::make_shared<reauto::motion::PurePursuit>(chassis.get());
+
 void initialize() {
 	chassis->init();
 }
@@ -59,6 +63,11 @@ void disabled() {}
 void competition_initialize() {}
 
 void autonomous() {
+	purePursuit->follow("/usd/path.txt", 20000, 10);
+
+	// PID testing
+	//controller->drive(12_in);
+	//controller->turn(90_deg);
 }
 
 void opcontrol() {
