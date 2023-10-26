@@ -48,7 +48,8 @@ public:
         TrackingConfiguration tConfig,
         double trackWidth,
         double wheelDiameter,
-        double gearRatio
+        double rpm,
+        OdomPrefs odomPrefs
     );
 
     // init chassis!
@@ -68,7 +69,7 @@ public:
 
     // for driving
 
-    // set the speed scale of the chassis (from 0 to 1, ratio of left:right).
+    // set the speed scale of the chassis (from 0 to 1, ratio of lefTt:right).
     void setSpeedScale(double scale, SpeedScaleType type = SpeedScaleType::LR_RATIO);
 
     // set the slew step for driver control

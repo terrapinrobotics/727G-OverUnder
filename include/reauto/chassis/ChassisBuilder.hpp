@@ -7,6 +7,7 @@
 #include "pros/misc.hpp"
 #include "reauto/chassis/impl/MotionChassis.hpp"
 #include "reauto/chassis/impl/HolonomicMode.hpp"
+#include "reauto/odom/Odometry.hpp"
 
 namespace reauto {
 
@@ -88,9 +89,20 @@ public:
         return *this;
     }
 
+    // set odom preferences (advanced)
+    ChassisBuilder& odomPrefs(OdomPrefs prefs) {
+        m_odomPrefs = prefs;
+        return *this;
+    }
+
     // build the chassis with feedback
     std::shared_ptr<MotionChassis> build() {
-        return std::make_shared<MotionChassis>(m_left, m_right, m_gearset, *m_controller, HoloMode, m_imuA, m_imuB, m_firstTWheelPort, m_firstTWheelDist, m_secondTWheelPort, m_secondTWheelDist, m_thirdTWheelPort, m_thirdTWheelDist, m_tWheelDiam, m_tConfig, m_trackWidth, m_wheelDiam, m_chassisRPM);
+        std::cout << "Build called..." << std::endl;
+
+        // cout tconfig
+        std::cout << "TConfig: " << static_cast<int>(m_tConfig) << std::endl;
+
+        return std::make_shared<MotionChassis>(m_left, m_right, m_gearset, *m_controller, HoloMode, m_imuA, m_imuB, m_firstTWheelPort, m_firstTWheelDist, m_secondTWheelPort, m_secondTWheelDist, m_thirdTWheelPort, m_thirdTWheelDist, m_tWheelDiam, m_tConfig, m_trackWidth, m_wheelDiam, m_chassisRPM, m_odomPrefs);
     }
 
 private:
@@ -128,5 +140,8 @@ private:
     double m_trackWidth = 0;
     double m_wheelDiam = 0;
     double m_chassisRPM = 0;
+
+    // odom preferences
+    OdomPrefs m_odomPrefs;
 };
 }
