@@ -27,9 +27,6 @@ pros::adi::Pneumatics walls('A', false);
 pros::adi::Pneumatics doinker('B', false);
 pros::adi::Pneumatics climb('E', false);
 
-#define LAT_MOVE 12
-#define ANG_MOVE 45
-
 // set up PID controller for lateral movement
 std::vector<IPIDConstants> latConstants = {
 	{ 24, 0, 0, 0},
@@ -37,12 +34,13 @@ std::vector<IPIDConstants> latConstants = {
 	{ 12, 0, 0.4, 12},
 	{ 12, 0, 0.6, 18},
 	{ 12, 0, 0.7, 24},
+	{12, 0, 0.9, 60}
 };
 
 // angular movement
 std::vector<IPIDConstants> angConstants = {
-	{3.5, 0, 0.21, 45},
-	{3.5, 0, 0.24, 90}
+	{3.8, 0, 0.21, 45},
+	{3.6, 0, 0.24, 90}
 };
 
 PIDExits latExits = {
@@ -55,7 +53,7 @@ PIDExits latExits = {
 
 PIDExits angExits = {
 	0.5,
-	1,
+	2,
 	60,
 	150,
 	250
@@ -63,7 +61,7 @@ PIDExits angExits = {
 
 auto latPID = std::make_shared<reauto::controller::PIDController>(latConstants, latExits, 0, 5);
 auto angPID = std::make_shared<reauto::controller::PIDController>(angConstants, angExits, 5);
-auto controller = std::make_shared<reauto::MotionController>(chassis, latPID.get(), angPID.get());
+auto controller = std::make_shared<reauto::MotionController>(chassis, latPID.get(), angPID.get(), 5);
 
 auto purePursuit = std::make_shared<reauto::motion::PurePursuit>(chassis.get());
 
@@ -75,16 +73,31 @@ void disabled() {}
 
 void competition_initialize() {}
 
-void autonomous() {
-	//purePursuit->follow("/usd/path.txt", 20000, 10);
+void shootLoop() {
+	// shoot for ~45 seconds
+	cata.move_voltage(10800);
+	pros::delay(45000);
+	cata.move_voltage(0);
+}
 
-	// PID testing
-	//controller->turn(90_deg);
+void autonomous() {
+	//shootLoop(); // shoot all our triballs
+	controller->turn(50_deg, 127, false, 750);
+	controller->drive(82_in, 100, 4500); // this should be 82
+	controller->turn(125_deg, 127, false, 750);
+	controller->drive(-22_in, 127, 1500);
+	controller->turn(65_deg, 127, false, 750);
+	controller->drive(-14_in, 127, 1500);
+	controller->turn(155_deg, 127, false, 750);
+	controller->drive(-24_in, 127, 1500);
+	controller->turn(-90_deg, 127, false, 750); // TODO: TUNE THIS!!!
 }
 
 void opcontrol() {
 	//controller->drive(LAT_MOVE);
 	//controller->turn(ANG_MOVE);
+
+	controller->drive(-12);
 
 	chassis->setDriveExponent(3);
  	chassis->setControllerDeadband(12);
