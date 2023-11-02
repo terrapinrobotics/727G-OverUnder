@@ -40,7 +40,8 @@ std::vector<IPIDConstants> latConstants = {
 // angular movement
 std::vector<IPIDConstants> angConstants = {
 	{3.8, 0, 0.21, 45},
-	{3.6, 0, 0.24, 90}
+	{3.6, 0, 0.24, 90},
+	{3.4, 0, 0.24, 120}
 };
 
 PIDExits latExits = {
@@ -90,14 +91,20 @@ void autonomous() {
 	controller->drive(-14_in, 127, 1500);
 	controller->turn(155_deg, 127, false, 750);
 	controller->drive(-24_in, 127, 1500);
-	controller->turn(-90_deg, 127, false, 750); // TODO: TUNE THIS!!!
+	controller->turn(-45_deg, 100, false, 750); // TODO: TUNE THIS!!!
 }
 
 void opcontrol() {
 	//controller->drive(LAT_MOVE);
 	//controller->turn(ANG_MOVE);
 
-	controller->drive(-12);
+	//controller->turn(20_deg);
+	//controller->drive(12_in);
+	//controller->turn(0_deg);
+
+	//controller->drive(-12);
+
+	controller->drive({0, 12});
 
 	chassis->setDriveExponent(3);
  	chassis->setControllerDeadband(12);
