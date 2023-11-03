@@ -1,4 +1,5 @@
 #include "main.h"
+#include "pros/abstract_motor.hpp"
 #include "pros/misc.h"
 #include "pros/misc.hpp"
 #include "reauto/api.hpp"
@@ -8,6 +9,11 @@
 #include <memory>
 #include <streambuf>
 #include <string>
+
+// A = close HWP, B = far, C = skills
+#define AUTO 'A'
+// A for ARCADE, T for TANK
+#define DRIVETYPE 'A'
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 
@@ -21,7 +27,7 @@ auto chassis =
 
 // the catapult is free spinning, so no need to add any functionality to reauto.
 pros::Motor cata(12);
-pros::Motor intake(11);
+pros::Motor intake(11, pros::MotorGears::green);
 
 // walls
 pros::adi::Pneumatics walls('A', false);
@@ -44,6 +50,7 @@ std::vector<IPIDConstants> latConstants = {
 // angular movement
 std::vector<IPIDConstants> angConstants = {
 	{3.8, 0, 0.21, 45},
+	{3.6, 0, 0.24, 70},
 	{3.6, 0, 0.24, 90},
 	{3.4, 0, 0.24, 120}
 };
@@ -85,36 +92,34 @@ void shootLoop(int time_ms) {
 	cata.move_voltage(0);
 }
 
-void autonomous() {
-	//purePursuit->follow("/usd/path.txt", 20000, 10);
+void skillsAuto() {
+	controller->turn(-37_deg, 100_pct, false, 900);
 
-	// PID testing
-	//controller->turn(90_deg);
+	pros::delay(1000);
 
-	controller->turn(-32_deg);
-
-	//shootLoop(31000);
+	doinker.toggle();
+	shootLoop(36000);
+	doinker.toggle();
 
 	// delay for safety
-	//pros::delay(1500);
+	pros::delay(1500);
 
 	controller->drive({0, 82}, 80_pct, false, 1950);
 
 	// turn around the corner
 	controller->drive({-20, 82}, 100_pct, true, 1200);
-	controller->drive({-22, 56}, 100_pct, true, 900);
-	controller->drive({-22, 56}, 80_pct, true, 900);
+	controller->drive({-22, 62}, 100_pct, true, 820);
 	
-	controller->drive({-63, 56}, 80_pct, true, 1200);
+	controller->drive({-54, 61}, 80_pct, true, 1000);
 
 	controller->turn(-180_deg, 80_pct, false, 750);
-	controller->drive(6_in);
-	pros::delay(1000); // TODO: figure out why this is needed
+	controller->drive(4_in, 100_pct, 500);
+	pros::delay(500); // TODO: figure out why this is needed
 
 	// walls out
 	walls.toggle();
 
-	controller->drive({-63, 81}, 100_pct, true, 2000);
+	controller->drive({-54, 95}, 100_pct, true, 2000);
 
 	// back up a bit
 	controller->drive(10_in, 100_pct, 1500);
@@ -122,32 +127,130 @@ void autonomous() {
 	// walls in
 	walls.toggle();
 
-	controller->drive({-75, 56}, 100_pct, true, 2000);
+	controller->drive({-70, 68}, 100_pct, true, 2000);
 
 	// walls out
 	walls.toggle();
 
-	controller->drive({-72, 95}, 100_pct, true, 2000);
+	controller->drive({-54, 102}, 100_pct, true, 2000);
+
+	// turn to push under
+	controller->turn(-180_deg, 100_pct, false, 600);
+
 	controller->drive(14_in);
 
 	// walls in
 	walls.toggle();
+}
 
-	pros::delay(5000);
+void matchAutoFar() {
+	/*controller->drive(50, 90_pct, 1800);
+	controller->turn(-90_deg, 100_pct, false, 1200);
+	controller->drive(5_in, 100_pct, 1000);
+	intake.move_relative(720, 600);
+	pros::delay(450);
+	controller->drive(-25_in, 100_pct, 1800);
+	controller->turn(90_deg, 100_pct, false, 1000);
+	walls.toggle();
+	controller->drive(-32_in, 100_pct, 1800);
+	controller->drive(8_in, 100_pct, 1200);
+	walls.toggle();
+	controller->turn(74_deg, 100_pct, false, 1000);
 
-	// drive back
-	controller->drive({-6, 87}, 80_pct);
-	controller->drive({0, 0}, 60_pct);
+	std::cout << "HERE (A)" << std::endl;
 
-	/*controller->turn(50_deg, 127, false, 750);
-	controller->drive(82_in, 100, 4500); // this should be 82
-	controller->turn(125_deg, 127, false, 750);
-	controller->drive(-22_in, 127, 1500);
-	controller->turn(65_deg, 127, false, 750);
-	controller->drive(-14_in, 127, 1500);
-	controller->turn(155_deg, 127, false, 750);
-	controller->drive(-24_in, 127, 1500);
-	controller->turn(-45_deg, 100, false, 750); // TODO: TUNE THIS!!!*/
+	// reverse to intake triball
+	intake.move(-127);
+
+	std::cout << "HERE (B)" << std::endl;
+	
+	controller->drive(19_in, 80_pct, 2000);
+
+	std::cout << "HERE" << std::endl;*/
+
+	controller->drive({0, 50}, 90_pct, false, 1800);
+	controller->turn(-92_deg, 100_pct, false, 1000);
+	controller->drive(5.5_in, 100_pct, 900);
+	
+	// score triball
+	intake.move_relative(720, 600);
+	pros::delay(450);
+
+	// back up for other triball
+	controller->drive({15, 50}, 100_pct, false, 1800);
+	controller->turn(90_deg, 100_pct, false, 1000);
+	walls.toggle();
+	pros::delay(200);
+	controller->drive({-8, 50}, 100_pct, true, 1800);
+
+	// go forwards and remove walls
+	controller->drive(10_in, 100_pct, 1000);
+	walls.toggle();
+
+	// drive to triball
+	intake.move(-127);
+	controller->drive({18, 60}, 80_pct, false, 1800);
+
+	// back up with triball
+	pros::delay(1000);
+	intake.brake();
+	controller->drive(-15_in, 100_pct, 1500);
+	controller->turn(-92_deg, 100_pct, false, 1000);
+
+	// spit out triball
+	intake.move_relative(360, 150);
+	pros::delay(750);
+	controller->drive(-5_in, 100_pct, 750);
+
+	// reverse to goal
+	controller->turn(90_deg, 100_pct, false, 900);
+	walls.toggle();
+	controller->drive({-16, 50}, 100_pct, true); // should be scored!
+}
+
+void matchAutoClose() {
+	controller->drive({0, 28}, 100_pct, false, 1200);
+	controller->turn(47_deg, 100_pct, false, 900);
+	controller->drive(-28_in, 100_pct, 1800);
+
+	// grab match load
+	doinker.toggle();
+	pros::delay(500);
+
+	// bring it fwd
+	controller->turn(105_deg, 100_pct, false, 1000);
+	controller->drive(8_in, 100_pct, 1000);
+	doinker.toggle();
+
+	// go score preload
+	controller->drive({-5, 55}, 90_pct, false, 1500);
+
+	// turn to face goal
+	controller->turn(-90_deg, 100_pct, false, 1000);
+
+	// score preload
+	controller->drive(4_in, 100_pct, 800);
+	intake.move_relative(720, 600);
+	pros::delay(450);
+	controller->drive(8_in, 100_pct, 800);
+
+	// elevate
+	controller->drive({-5, 5}, 100_pct, false, 2000);
+	controller->drive({30, 5}, 70_pct, false, 2000);
+}
+
+void autonomous() {
+	if (AUTO == 'A') {
+		matchAutoClose();
+	}
+
+	else if (AUTO == 'B') {
+		matchAutoFar();
+	}
+
+	else {
+		skillsAuto();
+	}
 }
 
 void opcontrol() {
@@ -164,8 +267,8 @@ void opcontrol() {
 
 	while (true) {
 		// step our tank drive loop, handled by reauto
-		chassis->tank();
-		//chassis->arcade();
+		if (DRIVETYPE == 'T') chassis->tank();
+		else chassis->arcade();
 
 		// get pose
 		Pose p = chassis->getPose();
