@@ -11,7 +11,7 @@
 #include <string>
 
 // A = close HWP, B = far, C = skills
-#define AUTO 'A'
+#define AUTO 'B'
 // A for ARCADE, T for TANK
 #define DRIVETYPE 'A'
 
@@ -144,44 +144,21 @@ void skillsAuto() {
 }
 
 void matchAutoFar() {
-	/*controller->drive(50, 90_pct, 1800);
-	controller->turn(-90_deg, 100_pct, false, 1200);
-	controller->drive(5_in, 100_pct, 1000);
-	intake.move_relative(720, 600);
-	pros::delay(450);
-	controller->drive(-25_in, 100_pct, 1800);
-	controller->turn(90_deg, 100_pct, false, 1000);
-	walls.toggle();
-	controller->drive(-32_in, 100_pct, 1800);
-	controller->drive(8_in, 100_pct, 1200);
-	walls.toggle();
-	controller->turn(74_deg, 100_pct, false, 1000);
-
-	std::cout << "HERE (A)" << std::endl;
-
-	// reverse to intake triball
-	intake.move(-127);
-
-	std::cout << "HERE (B)" << std::endl;
-	
-	controller->drive(19_in, 80_pct, 2000);
-
-	std::cout << "HERE" << std::endl;*/
-
 	controller->drive({0, 50}, 90_pct, false, 1800);
-	controller->turn(-92_deg, 100_pct, false, 1000);
-	controller->drive(5.5_in, 100_pct, 900);
+	controller->turn(92_deg, 100_pct, false, 1000);
+	controller->drive(5_in, 100_pct, 900);
 	
 	// score triball
 	intake.move_relative(720, 600);
-	pros::delay(450);
+	pros::delay(500);
+	controller->drive(6_in, 100_pct, 650);
 
 	// back up for other triball
-	controller->drive({15, 50}, 100_pct, false, 1800);
-	controller->turn(90_deg, 100_pct, false, 1000);
+	controller->drive({-15, 47}, 100_pct, false, 1800);
+	controller->turn(-90_deg, 100_pct, false, 1000);
 	walls.toggle();
 	pros::delay(200);
-	controller->drive({-8, 50}, 100_pct, true, 1800);
+	controller->drive({8, 50}, 100_pct, true, 1800);
 
 	// go forwards and remove walls
 	controller->drive(10_in, 100_pct, 1000);
@@ -189,13 +166,13 @@ void matchAutoFar() {
 
 	// drive to triball
 	intake.move(-127);
-	controller->drive({18, 60}, 80_pct, false, 1800);
+	controller->drive({-18, 55}, 80_pct, false, 1800);
 
 	// back up with triball
 	pros::delay(1000);
 	intake.brake();
-	controller->drive(-15_in, 100_pct, 1500);
-	controller->turn(-92_deg, 100_pct, false, 1000);
+	controller->drive(-12_in, 100_pct, 1500);
+	controller->turn(92_deg, 100_pct, false, 1000);
 
 	// spit out triball
 	intake.move_relative(360, 150);
@@ -203,9 +180,9 @@ void matchAutoFar() {
 	controller->drive(-5_in, 100_pct, 750);
 
 	// reverse to goal
-	controller->turn(90_deg, 100_pct, false, 900);
+	controller->turn(-90_deg, 100_pct, false, 900);
 	walls.toggle();
-	controller->drive({-16, 50}, 100_pct, true); // should be scored!
+	controller->drive({16, 50}, 100_pct, true); // should be scored!
 }
 
 void matchAutoClose() {
@@ -235,8 +212,8 @@ void matchAutoClose() {
 	controller->drive(8_in, 100_pct, 800);
 
 	// elevate
-	controller->drive({-5, 5}, 100_pct, false, 2000);
-	controller->drive({30, 5}, 70_pct, false, 2000);
+	controller->drive({-5, 8}, 100_pct, false, 1800);
+	controller->drive({30, 8}, 80_pct, false, 2000);
 }
 
 void autonomous() {
